@@ -1,0 +1,29 @@
+name:                dub-machine
+version:             0.1.0.0
+synopsis:            A Dub Machine in csound-expression
+-- description:
+homepage:            https://github.com/ehonda/dub_machine
+license:             PublicDomain
+author:              ehonda
+maintainer:          none
+category:            Sound
+build-type:          Simple
+extra-source-files:  CHANGELOG.md, README.md
+cabal-version:       >=1.10
+
+library
+  hs-source-dirs:  src
+  build-depends:       base >=4.12 && <4.13,
+                       csound-expression, csound-catalog, csound-sampler,
+                       split, mwc-probability
+  exposed-modules:  Bass Envelopes Piano Scale Tempo Utils
+                    Drums Effects Instruments Rnd Theme
+  extensions: DoAndIfThenElse
+                     
+executable dub-machine
+  main-is:             dub_machine.hs
+  build-depends: base, dub-machine,
+                 csound-expression, csound-catalog, csound-sampler,
+                 mwc-probability
+  hs-source-dirs:     .
+  default-language:    Haskell2010
