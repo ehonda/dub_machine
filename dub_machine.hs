@@ -19,6 +19,15 @@ import Utils
 -- ###################################################################
 
 main = do
+  final_sig <- compose
+  
+  -- dac final_sig
+
+  writeSnd "out.wav" final_sig
+  let audio = wav "out.wav"
+  dac $ runSam (sig bpm) audio
+  
+compose = do
     gen <- createSystemRandom
     
     -- Instrument Signals
@@ -47,41 +56,6 @@ main = do
         sigs = [piano_sig, bass_sig, theme_sig]
         final_sig = at (\x -> combine (sigs ++ [x])) 
             (mul 0.5 (drums_sig + magnus_sig))
-    
-    dac final_sig
-    
-write_and_play = do
-    gen <- createSystemRandom
-    
-    -- Instrument Signals
-    drums_raw <- make_drum_machine_sig gen
-    piano_raw <- make_piano_sig gen
-    bass_raw <- make_bass_sig gen
-    theme_raw <- make_theme_sig gen
-       
-    drums_env <- make_drums_env gen
-    piano_env <- make_piano_env gen
-    bass_env <- make_bass_env gen
-    theme_env <- make_theme_env gen
-    
-    
-    
-    let 
-        drums_sig = at (\x -> wrap_sig drums_env x) drums_raw
-        piano_sig = at (\x -> mul 0.5 (wrap_sig piano_env x)) piano_raw
-        bass_sig = at (\x -> mul 0.5 (wrap_sig bass_env x)) bass_raw
-        theme_sig = at (\x -> mul 0.5 (wrap_sig theme_env x)) theme_raw
 
-    -- Effect signals
-    magnus_sig <- make_drums_delay gen drums_sig
-    piano_echo_sig <- make_piano_echo_sig gen piano_sig
-    let theme_hall_sig = make_theme_hall_sig theme_sig
-    
-    let
-        sigs = [piano_sig, bass_sig, theme_sig, piano_echo_sig, theme_hall_sig]
-        final_sig = at (\x -> combine (sigs ++ [x])) 
-            (mul 0.5 (drums_sig + magnus_sig))
-    
-    writeSnd "out.wav" final_sig
-    let audio = wav "out.wav"
-    dac $ runSam (sig bpm) audio
+    return final_sig
+
